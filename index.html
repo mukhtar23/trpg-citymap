@@ -9,8 +9,16 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
     <title>TRPG City Map Generator</title>
+        <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="getinput.js"></script>
   </head>
-  <body>
+  <body >
+
+    <!-- Dropdown for the map size -->
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="size" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         City Size
@@ -22,7 +30,7 @@
       </div>
     </div>
 
-    
+    <!-- Dropdown to choose water source -->
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="water" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Water Source
@@ -35,6 +43,7 @@
       </div>
     </div>
 
+    <!-- Dropdown if you want a wall or not -->
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="wall" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Wall?
@@ -48,16 +57,16 @@
     <button type="button" class="btn btn-outline-primary btn-lg" id="btn-generate">Generate</button>
     
     <div id="result">
-        <p id="input-size">size</p>
-        <p id="input-water">water</p>
-        <p id="input-wall">wall</p>
+        <p id="input-size">Size: </p>
+        <p id="input-water">Water Source: </p>
+        <p id="input-wall">Wall?:</p>
     </div>
-    
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <script src="getinput.js"></script>
+
+    <button type="button" class="btn btn-outline-primary btn-lg" id="btn-clear-grid" onclick="clearGrid()">Clear Grid</button>
+
+    <canvas id="canvas" width="1000" height="1000">
+
+
+    </canvas>
   </body>
 </html>
