@@ -5,6 +5,8 @@ var wall;
 var selected;
 
 var gridSize = 0;
+var squareSize = 30;
+var array = [];
 
 function getGridSize(){
     if (size == 'small'){
@@ -17,35 +19,75 @@ function getGridSize(){
     console.log(gridSize);
 }
 
-function draw() {
-    var canvas = document.getElementById('canvas');
+function createGrid(){
     var x = 0;
     var y = 0;
-    // if (canvas.getContext) {
-        var ctx = canvas.getContext('2d');
-        
-        for(var i = 0; i < gridSize; i++){
-            for(var j = 0; j <gridSize; j++){
-                ctx.rect(x, y, 30, 30);
-                ctx.fillStyle = "white";
-                ctx.fill();
-                ctx.stroke();
-                x+=30;
-            }
-            x=0;
-            y+=30;
+    array = [];
+    for(var i = 0; i < gridSize; i++){
+        array.push([]);
+        for(var j = 0; j <gridSize; j++){
+            var square = {};
+            square.color = "white";
+            square.water = "none";
+            square.wall = "no";
+            square.posX = x
+            square.posY = y;
+            array[i].push(square);
+            x+=squareSize;
         }
-        // ctx.rect(x, y, 50, 50);
-        // ctx.fillStyle = "white";
-        // ctx.fill();
-        // ctx.stroke();
+        x=0;
+        y+=squareSize;
+    }
+}
 
-    //   ctx.clearRect(45, 45, 60, 60);
-    //   ctx.strokeRect(50, 50, 50, 50);
-    // }
+function drawGrid(){
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+
+    var x = 0;
+    var y = 0;
+
+    for(var i = 0; i < gridSize; i++){
+        for(var j = 0; j <gridSize; j++){
+            ctx.rect(array[i][j].posX, array[i][j].posY, squareSize, squareSize);
+            ctx.fillStyle = array[i][j].color;
+            ctx.fill();
+            ctx.stroke();
+        }
+        // x=0;
+        // y+=squareSize;
+    }
+}
+
+function draw() {
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+
+    var x = 0;
+    var y = 0;
+    
+    for(var i = 0; i < gridSize; i++){
+        for(var j = 0; j <gridSize; j++){
+            ctx.rect(x, y, squareSize, squareSize);
+            ctx.fillStyle = "white";
+            ctx.fill();
+            ctx.stroke();
+            x+=squareSize;
+        }
+        x=0;
+        y+=squareSize;
+    }
+    // ctx.rect(x, y, 50, 50);
+    // ctx.fillStyle = "white";
+    // ctx.fill();
+    // ctx.stroke();
+
+//   ctx.clearRect(45, 45, 60, 60);
+//   ctx.strokeRect(50, 50, 50, 50);
 }
 
 function clearGrid(){
+    gridSize = 0;
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0,0, canvas.width, canvas.height);
@@ -55,11 +97,14 @@ function clearGrid(){
 function main(){
     console.log("Main size: " + size);
     getGridSize();
-    draw();
+    createGrid();
+    // draw();
+    drawGrid();
     console.log(size);
     console.log(water);
     console.log(wall);
     console.log(selected)
+    console.log(array);
 }
 
 $(function(){
