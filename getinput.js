@@ -44,8 +44,10 @@ function createGrid(){
 function createMap() { 
     // for(var i = 0; i< 2; i++){
         let dimensions = gridSize, // width and height of the map
+            // The larger the maxTurn is compared to the dimensions, the denser the map will be. 
+            // The larger the maxLength is compared to the dimensions, the more “tunnel-y” it will look.
             maxTunnels = Math.floor(gridSize*2), // max number of tunnels possible (max number of turns the path can take)
-            maxLength = Math.floor(gridSize/2), // max length each tunnel can have before a horizontal or vertical turn
+            maxLength = Math.floor(gridSize), // max length each tunnel can have before a horizontal or vertical turn
             // map = createArray(1, dimensions), // create a 2d array full of 1's
             currentRow = Math.floor(Math.random() * dimensions), // our current row - start at a random spot
             currentColumn = Math.floor(Math.random() * dimensions), // our current column - start at a random spot
@@ -78,7 +80,7 @@ function createMap() {
                     ((currentColumn === dimensions - 1) && (randomDirection[1] === 1))) { 
                     break; 
                 } else { 
-                    array[currentRow][currentColumn].color = 'brown'; //set the value of the index in map to 0 (a tunnel, making it one longer) 
+                    array[currentRow][currentColumn].color = 'yellow'; //set the value of the index in map to 0 (a tunnel, making it one longer) 
                     currentRow += randomDirection[0]; //add the value from randomDirection to row and col (-1, 0, or 1) to update our location 
                     currentColumn += randomDirection[1]; 
                     tunnelLength++; //the tunnel is now one longer, so lets increment that variable 
@@ -92,6 +94,21 @@ function createMap() {
         }
     // } 
     // return map; // all our tunnels have been created and our map is complete, so lets return it to our render() 
+}
+
+function createBuildings(){
+    for(var i = 0; i < gridSize; i++){
+        for(var j = 0; j <gridSize; j++){
+            // if(array[i][j].color == 'yellow'){
+            //     break;
+            // }
+            if( array[i][j].color == 'white'){
+                array[i][j].color = 'brown'
+            }
+        }
+        // x=0;
+        // y+=squareSize;
+    }
 }
 
 function drawGrid(){
@@ -158,6 +175,7 @@ function main(){
     createGrid();
     // draw();
     createMap();
+    createBuildings();
     drawGrid();
     console.log(size);
     console.log(water);
