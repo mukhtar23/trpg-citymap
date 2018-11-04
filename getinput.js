@@ -10,7 +10,7 @@ var array = [];
 
 function getGridSize(){
     if (size == 'small'){
-        gridSize = 10;
+        gridSize = 13;
     }else if(size == 'medium'){
         gridSize = 17;
     }else if(size == 'large'){
@@ -43,9 +43,8 @@ function createGrid(){
 //lets create a randomly generated map for our dungeon crawler 
 function createMap() { 
     // for(var i = 0; i< 2; i++){
+        // defualt parameter for large map
         let dimensions = gridSize, // width and height of the map
-            // The larger the maxTurn is compared to the dimensions, the denser the map will be. 
-            // The larger the maxLength is compared to the dimensions, the more “tunnel-y” it will look.
             maxTunnels = Math.floor(gridSize*2), // max number of tunnels possible (max number of turns the path can take)
             maxLength = Math.floor(gridSize), // max length each tunnel can have before a horizontal or vertical turn
             // map = createArray(1, dimensions), // create a 2d array full of 1's
@@ -54,7 +53,14 @@ function createMap() {
             directions = [[-1, 0], [1, 0], [0, -1], [0, 1]], // array to get a random direction from (left,right,up,down)
             lastDirection = [], // save the last direction we went 
             randomDirection; // next turn/direction - holds a value from directions 
-        
+            
+        if (size == "small") {
+            maxTunnels = Math.floor(gridSize*3); // max number of tunnels possible (max number of turns the path can take)
+            maxLength = Math.floor(gridSize); // max length each tunnel can have before a horizontal or vertical turn
+        } else if (size == "medium") {
+            maxTunnels = Math.floor(gridSize*3); // max number of tunnels possible (max number of turns the path can take)
+            maxLength = Math.floor(gridSize); // max length each tunnel can have before a horizontal or vertical turn    
+        }            
         // lets create some tunnels - while maxTunnels, dimentions, and maxLength  is greater than 0. 
         while (maxTunnels && dimensions && maxLength) { 
         
@@ -80,7 +86,7 @@ function createMap() {
                     ((currentColumn === dimensions - 1) && (randomDirection[1] === 1))) { 
                     break; 
                 } else { 
-                    array[currentRow][currentColumn].color = 'yellow'; //set the value of the index in map to 0 (a tunnel, making it one longer) 
+                    array[currentRow][currentColumn].color = 'DimGrey'; //set the value of the index in map to 0 (a tunnel, making it one longer) 
                     currentRow += randomDirection[0]; //add the value from randomDirection to row and col (-1, 0, or 1) to update our location 
                     currentColumn += randomDirection[1]; 
                     tunnelLength++; //the tunnel is now one longer, so lets increment that variable 
@@ -103,7 +109,7 @@ function createBuildings(){
             //     break;
             // }
             if( array[i][j].color == 'white'){
-                array[i][j].color = 'brown'
+                array[i][j].color = 'DarkGoldenRod'
             }
         }
         // x=0;
@@ -184,6 +190,8 @@ function main(){
     console.log(array);
 }
 
+
+// grab user input
 $(function(){
 
  // get which option is selected
@@ -204,9 +212,9 @@ $(function(){
   water = $("#water").text();
   wall = $("#wall").text();
   console.log("Size: " + size);
-  $("#input-size").text(size);
-  $("#input-water").text(water);
-  $("#input-wall").text(wall);
+  //$("#input-size").text(size);
+  //$("#input-water").text(water);
+  //$("#input-wall").text(wall);
   //console.log(selected);
  });
 
