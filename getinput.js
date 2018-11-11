@@ -7,6 +7,11 @@ var selected;
 var gridSize = 0;
 var squareSize = 30;
 var array = [];
+var labels = [];
+var component = [];
+const GROUND = 'white';
+const PATH = 'grey';
+const WATER = 'Blue';
 
 function getGridSize(){
     if (size == 'small'){
@@ -27,7 +32,7 @@ function createGrid(){
         array.push([]);
         for(var j = 0; j <gridSize; j++){
             var square = {};
-            square.color = 'white';
+            square.color = GROUND;
             square.water = "none";
             square.wall = "no";
             square.posX = x
@@ -50,18 +55,18 @@ function createRiver(){
 
     for(var i = 0; i < gridSize; i++){
         if(startingPoint == 0){
-            array[topLeft[0]][topLeft[1]].color = "Blue";
+            array[topLeft[0]][topLeft[1]].color = WATER;
             topLeft[0]++;
             topLeft[1]++;
         }else if (startingPoint == 1){
-            array[topRight[0]][topRight[1]].color = "Blue";
+            array[topRight[0]][topRight[1]].color = WATER;
             topRight[0]++;
             topRight[1]--;
         }else if(startingPoint == 2){
-            array[topMiddle[0]][topMiddle[1]].color = "Blue";
+            array[topMiddle[0]][topMiddle[1]].color = WATER;
             topMiddle[0]++;
         }else if(startingPoint == 3){
-            array[leftMiddle[0]][leftMiddle[1]].color = "Blue";
+            array[leftMiddle[0]][leftMiddle[1]].color = WATER;
             leftMiddle[1]++;
         }
     }
@@ -119,13 +124,13 @@ function createMap() {
                     ((currentRow === dimensions - 1) && (randomDirection[0] === 1)) || 
                     ((currentColumn === dimensions - 1) && (randomDirection[1] === 1))) { 
                     break; 
-                } else if(array[currentRow][currentColumn].color == "Blue"){
+                } else if(array[currentRow][currentColumn].color == WATER){
                     currentRow += randomDirection[0]; //add the value from randomDirection to row and col (-1, 0, or 1) to update our location 
                     currentColumn += randomDirection[1]; 
                     tunnelLength++; //the tunnel is now one longer, so lets increment that variable 
                     break;
                 } else { 
-                    array[currentRow][currentColumn].color = 'Grey'; //set the value of the index in map to 0 (a tunnel, making it one longer) 
+                    array[currentRow][currentColumn].color = PATH; //set the value of the index in map to 0 (a tunnel, making it one longer) 
                     currentRow += randomDirection[0]; //add the value from randomDirection to row and col (-1, 0, or 1) to update our location 
                     currentColumn += randomDirection[1]; 
                     tunnelLength++; //the tunnel is now one longer, so lets increment that variable 
@@ -147,7 +152,7 @@ function createBuildings(){
             // if(array[i][j].color == 'yellow'){
             //     break;
             // }
-            if( array[i][j].color == 'white'){
+            if( array[i][j].color == GROUND){
                 array[i][j].color = 'GoldenRod'
             }
         }
@@ -213,7 +218,73 @@ function clearGrid(){
     ctx.restore();
     array = [];
 }
-  
+ 
+// label connected components (regions in the map)
+// http://www.aishack.in/tutorials/labelling-connected-components-example/
+// https://stackoverflow.com/questions/14465297/connected-component-labelling
+
+// convert the representation to 2d int array, ground = 1 and path = 0
+function buildIntArray() {
+	for (var i = 0; i < gridSize; i++){
+		for (var j = 0; j < gridSize; j++) {
+			if (array[i][j].color == GROUND)
+				array[i][j].type = 1;
+			else if (array[i][j].color == PATH)
+				array[i][j].type = 0;
+		}
+	}
+}
+// union components if connected
+function doUnion(a, b) {
+    // get the root component of a and b, and set the one's parent to the other
+    while (component[a] != a)
+        a = component[a];
+    while (component[b] != b)
+        b = component[b];
+    component[b] = a;
+}
+
+function unionCoords(x, y, x2, y2)
+{
+    if (y2 < gridSize && 
+		x2 < gridSize && 
+		array[x][y].type == 1 && 
+		array[x2][y2].type == 1) {
+			doUnion(x*gridSize + y, x2*gridSize + y2);
+	}
+}
+// label the regions and put the result into component array, want to modify this into 2d array
+function labelRegions() {
+	for (var i = 0; i < gridSize*gridSize; i++)
+        component[i] = i;
+    for (var x = 0; x < gridSize; x++){
+		for (var y = 0; y < gridSize; y++)
+		{
+			unionCoords(x, y, x+1, y);
+			unionCoords(x, y, x, y+1);
+		}
+	}
+    // print the array
+	var output = "";
+    for (var x = 0; x < gridSize; x++)
+    {
+        for (var  y = 0; y < gridSize; y++)
+        {
+            if (array[x][y].type == 0)
+            {
+                output+= ' ';
+                continue;
+            }
+            var c = x*gridSize + y;
+            while (component[c] != c) 
+				c = component[c];
+            //output += (char)('a'+c);
+			output += String.fromCharCode(65+c);
+        }
+        output += "\n";
+    }
+	console.log(output);
+} 
 function main(){
     console.log("Main size: " + size);
     getGridSize();
@@ -221,17 +292,19 @@ function main(){
     // draw();
 
     createMap();
+	buildIntArray();
+	labelRegions();
     if(water == "river"){
         createRiver();
     }
     // createMap();
     createBuildings();
     drawGrid();
-    console.log(size);
-    console.log(water);
-    console.log(wall);
-    console.log(selected)
-    console.log(array);
+    //console.log(size);
+    //console.log(water);
+    //console.log(wall);
+    //console.log(selected)
+    //console.log(array);
 }
 
 
