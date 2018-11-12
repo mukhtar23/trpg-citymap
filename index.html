@@ -16,52 +16,63 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="getinput.js"></script>
   </head>
-  <body >
+  
+  <body>
+	<div class="container-fluid full-width">
+	 <div class="row">
+		<div class="col">
+			<!-- Dropdown for the map size -->
+			<div class="dropdown">
+			  <button class="btn btn-secondary dropdown-toggle" type="button" id="size" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				City Size
+			  </button>
+			  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<a class="dropdown-item" id="small" href="#">Small (village)</a>
+				<a class="dropdown-item" id="medium" href="#">Medium (town)</a>
+				<a class="dropdown-item" id="large" href="#">Large (city)</a>
+			  </div>
+			</div>
 
-    <!-- Dropdown for the map size -->
-    <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="size" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        City Size
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" id="small" href="#">Small (village)</a>
-        <a class="dropdown-item" id="medium" href="#">Medium (town)</a>
-        <a class="dropdown-item" id="large" href="#">Large (city)</a>
-      </div>
-    </div>
+			<!-- Dropdown to choose water source -->
+			<div class="dropdown">
+			  <button class="btn btn-secondary dropdown-toggle" type="button" id="water" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Water Source
+			  </button>
+			  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<a class="dropdown-item" id="none" href="#">none</a>
+				<a class="dropdown-item" id="river" href="#">river</a>
+				<a class="dropdown-item" id="lake" href="#">lake</a>
+				<a class="dropdown-item" id="sea" href="#">sea</a>
+			  </div>
+			</div>
 
-    <!-- Dropdown to choose water source -->
-    <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="water" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Water Source
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" id="none" href="#">none</a>
-        <a class="dropdown-item" id="river" href="#">river</a>
-        <a class="dropdown-item" id="lake" href="#">lake</a>
-        <a class="dropdown-item" id="sea" href="#">sea</a>
-      </div>
-    </div>
+			<!-- Dropdown if you want a wall or not -->
+			<div class="dropdown">
+			  <button class="btn btn-secondary dropdown-toggle" type="button" id="wall" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Wall?
+			  </button>
+			  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<a class="dropdown-item" id="yes" href="#">Yes</a>
+				<a class="dropdown-item" id="no" href="#">No</a>
+			  </div>
+			</div>
 
-    <!-- Dropdown if you want a wall or not -->
-    <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="wall" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Wall?
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" id="yes" href="#">Yes</a>
-        <a class="dropdown-item" id="no" href="#">No</a>
-      </div>
-    </div>
+			<div>
+			  <button type="button" class="btn btn-outline-primary btn-lg" id="btn-generate">Generate</button>
+			  <button type="button" class="btn btn-outline-primary btn-lg" id="btn-clear-grid" onclick="clearGrid()">Clear Grid</button>
+			</div>
 
-    <div>
-      <button type="button" class="btn btn-outline-primary btn-lg" id="btn-generate">Generate</button>
-      <button type="button" class="btn btn-outline-primary btn-lg" id="btn-clear-grid" onclick="clearGrid()">Clear Grid</button>
-    </div>
+			<canvas id="canvas" width="1000" height="1000">
+			</canvas>
 
-    <canvas id="canvas" width="1000" height="1000">
+		</div>
+		<div class="col">
+			<div class="embed-responsive embed-responsive-16by9">
+				<iframe class="embed-responsive-item" id="3dviewer" src="misc_controls_pointerlock.html" allowfullscreen></iframe>
+			</div>
+		</div>
+	</div>
+	
 
-
-    </canvas>
   </body>
 </html>

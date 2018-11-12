@@ -3,6 +3,7 @@ var size;
 var water;
 var wall;
 var selected;
+var viewer3d;
 
 var gridSize = 0;
 var squareSize = 30;
@@ -256,6 +257,7 @@ function labelRegions() {
 				c = component[c];
             //output += (char)('a'+c);
 			output += String.fromCharCode(65+c);
+			array[x][y].section = c;
         }
         output += "\n";
     }
@@ -320,12 +322,17 @@ $(function(){
   var div = $(this).parent().parent(); 
   var btn = div.find('button');
   btn.text(selected);
-
   //console.log(selected);
-  
-  
  });
 
+window.onload = function() {
+    
+        viewer3d = document.getElementById("viewer3d");
+		viewer3d.contentWindow.postMessage({call:'sendValue', value: array}, '*');
+    
+}; 
+ 
+ 
  // generate button clicked
  $( "#btn-generate" ).on( "click", function() {
   size = $("#size").text();
@@ -338,7 +345,7 @@ $(function(){
   //console.log(selected);
  });
 
- $( "#btn-generate" ).on( "click", function(){
+ $( "#btn-generate" ).on( "click", function(){	
     main();
    });
 });

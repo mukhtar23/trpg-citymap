@@ -67,7 +67,7 @@
 			<div id="instructions">
 				<span style="font-size:40px">Click to play</span>
 				<br />
-				(W, A, S, D = Move, SPACE = Jump, MOUSE = Look around)
+				(W, A, S, D = Move, SPACE = Jump, MOUSE = Look around, ESC = quit)
 			</div>
 
 		</div>
@@ -97,6 +97,16 @@
 
 			function init() {
 
+			// get array from main frame
+			window.addEventListener('message', function(event) {
+				var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
+				if (origin !== 'index.html')
+					return;
+				if (typeof event.data == 'object' && event.data.call=='sendValue') {
+					console.log("array got");
+				}
+			}, false);
+
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
 
 				scene = new THREE.Scene();
@@ -115,7 +125,7 @@
 				instructions.addEventListener( 'click', function () {
 
 					controls.lock();
-
+					console.log("unlocked");
 				}, false );
 
 				controls.addEventListener( 'lock', function () {
@@ -241,35 +251,38 @@
 				scene.add( floor );
 
 				// objects
+				var gridSize = 25;
+				var buildingWidth = 20;
+				var distanceBetweenBuilding = 3;
+				for (var x = 0; x < gridSize; x++) {
+					for(var y = 0; y < gridSize; y++) {
+						var buildingHeight = getRandomBetween(10,100);
+						var boxGeometry = new THREE.BoxBufferGeometry( buildingWidth, buildingHeight, buildingWidth );
+						boxGeometry = boxGeometry.toNonIndexed(); // ensure each face has unique vertices
 
-				var boxGeometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
-				boxGeometry = boxGeometry.toNonIndexed(); // ensure each face has unique vertices
+						position = boxGeometry.attributes.position;
+						colors = [];
+						
+						for ( var i = 0, l = position.count; i < l; i ++ ) {
+							color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+							colors.push( color.r, color.g, color.b );
+						}
 
-				position = boxGeometry.attributes.position;
-				colors = [];
+						boxGeometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+				
+						var boxMaterial = new THREE.MeshPhongMaterial( { specular: 0xffffff, flatShading: true, vertexColors: THREE.VertexColors } );
+						boxMaterial.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
 
-				for ( var i = 0, l = position.count; i < l; i ++ ) {
+						var box = new THREE.Mesh( boxGeometry, boxMaterial );
+						box.position.x = buildingWidth/2 + x*(buildingWidth+distanceBetweenBuilding);
+						box.position.y = buildingWidth/2;
+						box.position.z = buildingWidth/2 + y*(buildingWidth+distanceBetweenBuilding);
 
-					color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-					colors.push( color.r, color.g, color.b );
+						scene.add( box );
+						objects.push( box );
 
-				}
-
-				boxGeometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-
-				for ( var i = 0; i < 500; i ++ ) {
-
-					var boxMaterial = new THREE.MeshPhongMaterial( { specular: 0xffffff, flatShading: true, vertexColors: THREE.VertexColors } );
-					boxMaterial.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-
-					var box = new THREE.Mesh( boxGeometry, boxMaterial );
-					box.position.x = Math.floor( Math.random() * 20 - 10 ) * 20;
-					box.position.y = Math.floor( Math.random() * 20 ) * 20 + 10;
-					box.position.z = Math.floor( Math.random() * 20 - 10 ) * 20;
-
-					scene.add( box );
-					objects.push( box );
-
+						
+					}					
 				}
 
 				//
@@ -348,6 +361,10 @@
 
 				renderer.render( scene, camera );
 
+			}
+			// get int between min and max
+			function getRandomBetween(min, max) {
+				return Math.random() * (max - min) + min;
 			}
 
 		</script>
