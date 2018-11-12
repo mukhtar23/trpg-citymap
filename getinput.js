@@ -13,6 +13,8 @@ const GROUND = 'white';
 const PATH = 'grey';
 const WATER = 'Blue';
 
+var pathArray = [];
+
 function getGridSize(){
     if (size == 'small'){
         gridSize = 13;
@@ -131,6 +133,7 @@ function createMap() {
                     break;
                 } else { 
                     array[currentRow][currentColumn].color = PATH; //set the value of the index in map to 0 (a tunnel, making it one longer) 
+                    pathArray.push( array[currentRow][currentColumn]);
                     currentRow += randomDirection[0]; //add the value from randomDirection to row and col (-1, 0, or 1) to update our location 
                     currentColumn += randomDirection[1]; 
                     tunnelLength++; //the tunnel is now one longer, so lets increment that variable 
@@ -182,33 +185,6 @@ function drawGrid(){
         // y+=squareSize;
     }
 }
-
-// function draw() {
-//     var canvas = document.getElementById('canvas');
-//     var ctx = canvas.getContext('2d');
-
-//     var x = 0;
-//     var y = 0;
-    
-//     for(var i = 0; i < gridSize; i++){
-//         for(var j = 0; j <gridSize; j++){
-//             ctx.rect(x, y, squareSize, squareSize);
-//             ctx.fillStyle = "white";
-//             ctx.fill();
-//             ctx.stroke();
-//             x+=squareSize;
-//         }
-//         x=0;
-//         y+=squareSize;
-//     }
-//     // ctx.rect(x, y, 50, 50);
-//     // ctx.fillStyle = "white";
-//     // ctx.fill();
-//     // ctx.stroke();
-
-// //   ctx.clearRect(45, 45, 60, 60);
-// //   ctx.strokeRect(50, 50, 50, 50);
-// }
 
 function clearGrid(){
     gridSize = 0;
@@ -285,6 +261,32 @@ function labelRegions() {
     }
 	console.log(output);
 } 
+
+// shows drawing of path
+function drawPath(){
+
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+    ctx.restore();
+
+    var x = 0;
+    var y = 0;
+
+    for(var i = 0; i < pathArray.length; i++){
+        (function(i) {
+            setInterval(function() {
+                ctx.beginPath();
+                ctx.rect(pathArray[i].posX, pathArray[i].posY, squareSize, squareSize);
+                ctx.fillStyle = pathArray[i].color;
+                ctx.fill();
+                ctx.stroke();   
+            }, 100*i)
+        })(i);
+    }
+    console.log("Done drawing path");
+}
+
 function main(){
     console.log("Main size: " + size);
     getGridSize();
@@ -300,6 +302,7 @@ function main(){
     // createMap();
     createBuildings();
     drawGrid();
+    // drawPath(); // shows drawing of a path
     //console.log(size);
     //console.log(water);
     //console.log(wall);
