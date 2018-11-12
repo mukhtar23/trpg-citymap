@@ -325,12 +325,6 @@ $(function(){
   //console.log(selected);
  });
 
-window.onload = function() {
-    
-        viewer3d = document.getElementById("viewer3d");
-		viewer3d.contentWindow.postMessage({call:'sendValue', value: array}, '*');
-    
-}; 
  
  
  // generate button clicked
@@ -347,6 +341,16 @@ window.onload = function() {
 
  $( "#btn-generate" ).on( "click", function(){	
     main();
-   });
-});
+	iframe.contentWindow.postMessage({call:'sendValue', value: array}, '*');
 
+   });
+   
+iframe.onload = function() {
+	// contentWindow is set!	
+};
+iframe.src = 'misc_controls_pointerlock.html';
+document.getElementById("frame3d").appendChild(iframe);
+});
+var iframe = document.createElement('iframe');
+iframe.width = 1920;
+iframe.height = 1080;

@@ -91,21 +91,30 @@
 			var direction = new THREE.Vector3();
 			var vertex = new THREE.Vector3();
 			var color = new THREE.Color();
-
+			var generatedMap = [];
+			
+			// fetch array from main index html
+			window.addEventListener('message', function(event) {
+				//console.log("array got");
+				generatedMap = event.data.value;
+				//console.log("received data is");
+				//console.log(event.data);
+				//var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
+				//console.log(origin);
+				//if (origin !== 'index.html')
+				//	return;
+				//if (typeof event.data == 'object' && event.data.call=='sendValue') {
+				//	console.log("array got");
+				
+			}, false);
+			
 			init();
 			animate();
 
 			function init() {
 
 			// get array from main frame
-			window.addEventListener('message', function(event) {
-				var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
-				if (origin !== 'index.html')
-					return;
-				if (typeof event.data == 'object' && event.data.call=='sendValue') {
-					console.log("array got");
-				}
-			}, false);
+
 
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
 
