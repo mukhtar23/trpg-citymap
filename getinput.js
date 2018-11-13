@@ -15,6 +15,7 @@ const PATH = 'grey';
 const WATER = 'Blue';
 
 var pathArray = [];
+var waterArray = [];
 
 function getGridSize(){
     if (size == 'small'){
@@ -48,35 +49,124 @@ function createGrid(){
     }
 }
 
+
 function createRiver(){
-    var topLeft = [0,0]
-    var topRight = [0, gridSize-1]
-    var topMiddle = [0, Math.ceil(gridSize/2)]
-    var leftMiddle = [Math.ceil(gridSize/2),0]
+    waterArray = [];
 
-    var startingPoint = Math.floor(Math.random() * 4);
+    var startingSide = Math.floor(Math.random()*4);
+    var startingLocation = getStartingLocation(startingSide);
 
-    for(var i = 0; i < gridSize; i++){
-        if(startingPoint == 0){
-            array[topLeft[0]][topLeft[1]].color = WATER;
-            topLeft[0]++;
-            topLeft[1]++;
-        }else if (startingPoint == 1){
-            array[topRight[0]][topRight[1]].color = WATER;
-            topRight[0]++;
-            topRight[1]--;
-        }else if(startingPoint == 2){
-            array[topMiddle[0]][topMiddle[1]].color = WATER;
-            topMiddle[0]++;
-        }else if(startingPoint == 3){
-            array[leftMiddle[0]][leftMiddle[1]].color = WATER;
-            leftMiddle[1]++;
+    var currentRow = startingLocation[0];
+    var currentColumn = startingLocation[1];
+
+    var toBuild = true;
+
+    lastDir = [];
+    var randomDirection = getStartingDirection(startingSide);
+
+    while(toBuild){
+        if (((currentRow === 0) && (randomDirection[0] === -1)) || 
+        ((currentColumn === 0) && (randomDirection[1] === -1)) || 
+        ((currentRow === gridSize - 1) && (randomDirection[0] === 1)) || 
+        ((currentColumn === gridSize - 1) && (randomDirection[1] === 1))) { 
+            toBuild = false;
+            // break; 
         }
+        array[currentRow][currentColumn].color = WATER;
+        waterArray.push(array[currentRow][currentColumn]);
+        currentRow += randomDirection[0];
+        currentColumn += randomDirection[1];
+        lastDir = randomDirection;
+        var favDir = getStartingDirection(startingSide);
+
+        randomDirection = chooseDirection(lastDir, favDir);
+
+    }
+
+}
+
+function chooseDirection(prevDir, favorDir){
+
+    var nd = [];
+    var newDir = Math.floor(Math.random()*5);
+
+    if(prevDir[2] == "south" && newDir == 0){
+        chooseDirection(prevDir, favorDir);
+    } else if(prevDir[2] == "west" && newDir == 1){
+        chooseDirection(prevDir, favorDir);
+    }else if(prevDir[2] == "north" && newDir == 2){
+        chooseDirection(prevDir, favorDir);
+    }else if(prevDir[2] == "east" && newDir == 3){
+        chooseDirection(prevDir, favorDir);
+    } else if (newDir == 4){
+        return favorDir;
+    }
+    var temp = getNewDirection(newDir);
+    var opp = oppDir(favorDir);
+    if(temp[2] == opp[2]){
+        return favorDir;
+    }else{
+        nd = temp;
+    }
+    return nd;
+}
+
+function oppDir(prevDir){
+    switch(prevDir[2]){
+        case "north":
+            return [1, 0, "south"];
+        case "east":
+            return [0,-1, "west"];
+        case "south":
+            return [-1,0, "north"];
+        case "west":
+            return [0,1,"east"]
     }
 }
 
+function getNewDirection(newDir){
+    var dir;
+    if(newDir == 0){
+        dir = [-1, 0, "north"];
+    }else if (newDir == 1){
+        dir = [0,1, "east"];
+    }else if(newDir == 2){
+        dir = [1,0, "south"];
+    }else if(newDir == 3){
+        dir = [0,-1, "west"];
+    }
+    return dir;
+}
+function getStartingLocation(startingSide){
+    var side;
+    if(startingSide == 0){
+        side = [0, Math.floor(Math.random()*gridSize), "north"];
+    }else if (startingSide == 1){
+        side = [Math.floor(Math.random()*gridSize), gridSize-1, "east"];
+    }else if(startingSide == 2){
+        side = [gridSize-1, Math.floor(Math.random()*gridSize), "south"];
+    }else if(startingSide == 3){
+        side = [Math.floor(Math.random()*gridSize), 0, "west"];
+    }
+    return side;
+}
+
+function getStartingDirection(startingSide){
+    var dir;
+    if(startingSide == 0){
+        dir = [1, 0, "south"];
+    }else if (startingSide == 1){
+        dir = [0,-1, "west"];
+    }else if(startingSide == 2){
+        dir = [-1,0, "north"];
+    }else if(startingSide == 3){
+        dir = [0,1, "east"];
+    }
+    return dir;
+}
+
 //lets create a randomly generated map for our dungeon crawler 
-function createMap() { 
+function createPath() { 
     // for(var i = 0; i< 2; i++){
         // The larger the maxTurn/maxTunnels is compared to the dimensions, the denser the map will be. 
         // The larger the maxLength is compared to the dimensions, the more “tunnel-y” it will look.
@@ -165,7 +255,7 @@ function createBuildings(){
     }
 }
 
-function drawGrid(){
+function drawMap(){
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0,0, canvas.width, canvas.height);
@@ -187,15 +277,6 @@ function drawGrid(){
     }
 }
 
-function clearGrid(){
-    gridSize = 0;
-    var canvas = document.getElementById('canvas');
-    var ctx = canvas.getContext('2d');
-    ctx.clearRect(0,0, canvas.width, canvas.height);
-    ctx.restore();
-    array = [];
-}
- 
 // label connected components (regions in the map)
 // http://www.aishack.in/tutorials/labelling-connected-components-example/
 // https://stackoverflow.com/questions/14465297/connected-component-labelling
@@ -289,22 +370,57 @@ function drawPath(){
     console.log("Done drawing path");
 }
 
+// shows water being created
+function drawWater(){
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+    ctx.restore();
+
+    var x = 0;
+    var y = 0;
+
+    for(var i = 0; i < waterArray.length; i++){
+        (function(i) {
+            setInterval(function() {
+                ctx.beginPath();
+                ctx.rect(waterArray[i].posX, waterArray[i].posY, squareSize, squareSize);
+                ctx.fillStyle = waterArray[i].color;
+                ctx.fill();
+                ctx.stroke();   
+            }, 100*i)
+        })(i);
+    }
+    console.log("Done drawing path");
+}
+
+
+function clearGrid(){
+    gridSize = 0;
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+    ctx.restore();
+    array = [];
+}
+ 
 function main(){
     console.log("Main size: " + size);
     getGridSize();
     createGrid();
     // draw();
 
-    createMap();
+    createPath();
 	buildIntArray();
 	labelRegions();
     if(water == "river"){
         createRiver();
     }
-    // createMap();
+    // createPath();
     createBuildings();
-    drawGrid();
-    // drawPath(); // shows drawing of a path
+    drawMap();
+    // drawPath(); // shows drawing of path
+    // drawWater(); // shows drawing of water
     //console.log(size);
     //console.log(water);
     //console.log(wall);
