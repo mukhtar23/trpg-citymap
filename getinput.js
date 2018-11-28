@@ -16,6 +16,14 @@ const WATER = 'Blue';
 const BUILDING = 'GoldenRod'
 const BRIDGE = 'Brown';
 
+// buildings //
+const TAVERN = "#B05F3C"; // some brown
+const SHOP = "#B96F6F"; // some silver
+const FARM = "#FFF7B7"; // some gold
+const TEMPLE = "#F3E7E7"; // some light grey
+const HOUSE = "#FF7575"; // some brick red
+
+
 var pathArray = [];
 var waterArray = [];
 
@@ -398,6 +406,32 @@ function labelRegions() {
 	console.log(output);
 } 
 
+// place holder for building
+
+// Find random spot (idea from strangeloop local maxima) as region center
+// Decide radius
+// Figure out which region is a neighborhood in radius (eat all region or keep it connected)
+// Decide what will be in same region
+
+//how to differentiate same type shops with different names?
+// maybe half random color, half type color?
+
+// output: array of coord for points [x1, y1, (x2, y2 ...)]
+function getNeighborhoodCenter(gridSize, numOfPoints) {
+	//return coord for neighborhood center
+	var pointCoords = [];
+	for (var i=0; i<numOfPoints; i++) {
+		var x = Math.floor((Math.random() * gridSize) + 1);
+		var y = Math.floor((Math.random() * gridSize) + 1);
+		pointCoords.push(x);
+		pointCoords.push(y);
+	}
+	return pointCoords;
+}
+ 
+
+
+// end of place holder for building
 // shows drawing of path
 function drawPath(){
 
