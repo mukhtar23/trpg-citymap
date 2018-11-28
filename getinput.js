@@ -13,6 +13,8 @@ var component = [];
 const GROUND = 'white';
 const PATH = 'grey';
 const WATER = 'Blue';
+const BUILDING = 'GoldenRod'
+const BRIDGE = 'Brown';
 
 var pathArray = [];
 var waterArray = [];
@@ -73,6 +75,7 @@ function createRiver(){
             // break; 
         }
         array[currentRow][currentColumn].color = WATER;
+        array[currentRow][currentColumn].startingSide = startingSide;
         waterArray.push(array[currentRow][currentColumn]);
         currentRow += randomDirection[0];
         currentColumn += randomDirection[1];
@@ -139,6 +142,7 @@ function getNewDirection(newDir){
 }
 function getStartingLocation(startingSide){
     var side;
+    // 0 - N, 1 - E, 2 - S, 3 - W
     if(startingSide == 0){
         side = [0, Math.floor(Math.random()*gridSize), "north"];
     }else if (startingSide == 1){
@@ -247,8 +251,57 @@ function createBuildings(){
             //     break;
             // }
             if( array[i][j].color == GROUND){
-                array[i][j].color = 'GoldenRod'
+                array[i][j].color = BUILDING;
             }
+        }
+        // x=0;
+        // y+=squareSize;
+    }
+}
+
+function createBridges(){
+    for(var i = 0; i < gridSize; i++){
+        for(var j = 0; j <gridSize; j++){
+            // if(array[i][j].color == 'yellow'){
+            //     break;
+            // }
+            if( array[i][j].color == WATER){
+                // water is going north or south
+                // check above and below a water block to see if there is a path there
+                if(array[i][j].startingSide == 0 || array[i][j].startingSide == 2){
+                    
+                    if(j == 0 || j == gridSize - 1 ){
+                        continue;
+                    }
+                    if((array[i][j-1].color == PATH && array[i][j+1].color == PATH)){
+                    array[i][j].color = BRIDGE;
+                    }
+                
+                }
+                // water is going east or west
+                // check left and right of water block to see if there is a path there
+                else if (array[i][j].startingSide == 1 || array[i][j].startingSide == 3){
+                   
+                    if(i == 0 || i == gridSize -1){
+                        continue;
+                    }
+
+                    if((array[i-1][j].color == PATH && array[i+1][j].color == PATH)){
+                        array[i][j].color = BRIDGE;
+                    }
+                }
+                // if(i == 0 || i == gridSize - 1 || j == 0 || j == gridSize -1){
+                //     continue;
+                // }
+                // if((array[i-1][j].color == PATH && array[i+1][j].color == PATH) || 
+                //         array[i][j-1].color == PATH && array[i][j+1].color == PATH ){
+                //     array[i][j].color = BRIDGE;
+                // }
+                
+            }
+            // if(array[i][j].color == WATER){
+            //     array[i][j].color = BRIDGE;
+            // }
         }
         // x=0;
         // y+=squareSize;
@@ -413,11 +466,13 @@ function main(){
     createPath();
 	buildIntArray();
 	labelRegions();
-    if(water == "river"){
-        createRiver();
-    }
+
     // createPath();
     createBuildings();
+    if(water == "river"){
+        createRiver();
+        createBridges();
+    }
     drawMap();
     // drawPath(); // shows drawing of path
     // drawWater(); // shows drawing of water
