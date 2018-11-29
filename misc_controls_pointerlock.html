@@ -97,7 +97,7 @@
 			window.addEventListener('message', function(event) {
 				//console.log("array got");
 				generatedMap = event.data.value;
-				console.log(generatedMap);
+				//console.log(generatedMap);
 				updateBoxes();
 				//console.log("received data is");
 				
@@ -265,7 +265,7 @@
 				
 				var gridSize = 25;
 				var buildingWidth = 20;
-				var distanceBetweenBuilding = 3;
+				var distanceBetweenBuilding = 0;
 				for (var x = 0; x < gridSize; x++) {
 					for(var y = 0; y < gridSize; y++) {
 						var buildingHeight = getRandomBetween(10,100);

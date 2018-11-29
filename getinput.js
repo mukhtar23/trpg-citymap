@@ -7,9 +7,11 @@ var viewer3d;
 
 var gridSize = 0;
 var squareSize = 30;
+
 var array = [];
 var labels = [];
 var component = [];
+
 const GROUND = 'white';
 const PATH = 'grey';
 const WATER = 'Blue';
@@ -23,19 +25,33 @@ const FARM = "#FFF7B7"; // some gold
 const TEMPLE = "#F3E7E7"; // some light grey
 const HOUSE = "#FF7575"; // some brick red
 
+var radius = 0;
+var feather_radius = 0;
+var numOfNeighborhoods = 0;
+var neighborhoodCoords = [];
+
 
 var pathArray = [];
 var waterArray = [];
 
-function getGridSize(){
-    if (size == 'small'){
-        gridSize = 13;
+// determine all size-based constant here
+function init() {	
+	if (size == 'small'){
+		gridSize = 13;
+        radius = 3;
+		feather_radius = 2;
+		numOfNeighborhoods = 1;
     }else if(size == 'medium'){
         gridSize = 19;
+		radius = 4;
+		feather_radius = 3;
+		numOfNeighborhoods = 2;
     }else if(size == 'large'){
         gridSize = 25;
+		radius = 6;
+		feather_radius = 5;
+		numOfNeighborhoods = 3;
     }
-    console.log(gridSize);
 }
 
 function createGrid(){
@@ -403,13 +419,17 @@ function labelRegions() {
         }
         output += "\n";
     }
-	console.log(output);
+	//console.log(output);
 } 
 
-// place holder for building
+// placeholder for building
 
 // Find random spot (idea from strangeloop local maxima) as region center
-// Decide radius
+// Decide radius and feathering radius
+
+//loop at each cell by row
+// check what area (in radius, in feathering, not in any)
+// generate and grow 
 // Figure out which region is a neighborhood in radius (eat all region or keep it connected)
 // Decide what will be in same region
 
@@ -417,7 +437,7 @@ function labelRegions() {
 // maybe half random color, half type color?
 
 // output: array of coord for points [x1, y1, (x2, y2 ...)]
-function getNeighborhoodCenter(gridSize, numOfPoints) {
+function createNeighborhoodCenter(gridSize, numOfPoints) {
 	//return coord for neighborhood center
 	var pointCoords = [];
 	for (var i=0; i<numOfPoints; i++) {
@@ -426,12 +446,86 @@ function getNeighborhoodCenter(gridSize, numOfPoints) {
 		pointCoords.push(x);
 		pointCoords.push(y);
 	}
-	return pointCoords;
+	neighborhoodCoords = pointCoords;
 }
  
+function fillBuildings() {
+	createNeighborhoodCenter(gridSize, numOfNeighborhoods);
+	
+	var debug_neighborhoodview = "";
+    for (var x = 0; x < gridSize; x++) {
+        for (var  y = 0; y < gridSize; y++) {
+			var id = getWhichNeighborhood(x,y);
+			debug_neighborhoodview += id;
+			// check if it is in a neighborhood
+            //if (array[x][y].type == 0) {
+            //    continue;
+            //}
+		}
+		debug_neighborhoodview += "\n";
+	}
 
+	//console.log(debug_neighborhoodview);
+}
+// return id of the neighborhood, or -1 if not in any
+function getWhichNeighborhood (x,y) { 
 
-// end of place holder for building
+	if (neighborhoodCoords.length != numOfNeighborhoods*2) {
+		console.log("Error: neighborhoodCoords.length does not match numOfNeighborhoods!");
+		return;
+	}
+	
+	var neighborhoodId = -1;
+	// loop through each neighborhoods
+	for (var i = 0; i < numOfNeighborhoods; i++ ) {
+		var cx = neighborhoodCoords[i*2];
+		var cy = neighborhoodCoords[i*2+1];
+		//console.log("cx"+cx+"cy"+cy+"x"+x+"y"+y);
+		var distance = Math.ceil(Math.sqrt((Math.pow(x-cx,2) + Math.pow(y-cy,2))));
+		console.log(distance);
+
+		if (distance <　radius) {
+			return i;
+		} else if (distance < radius+feather_radius) {
+			return i+0.5;
+		}
+		// else not in this neighborhood
+		
+	}
+	//return -1 if not in any neighborhood
+	return neighborhoodId;
+}
+function getBuildingDirection(x,y) {
+	var adjCells = [];
+	adjCells.push(array[x][y-1].type);
+	adjCells.push(array[x][y+1].type);
+	adjCells.push(array[x-1][y].type);
+	adjCells.push(array[x+1][y].type);
+	
+	
+	adjCells.sort();
+	// [0 0 1 1]
+	
+	// count how many 0 (path) there is 
+	var ptr = 0
+	var count = 0
+	while (adjCells[ptr] != 1) {
+		count++;
+		ptr++;
+	}
+
+	
+	// handle edge cases
+	// 0. facing 0 side - inside region... don't touch 
+	// 1. facing 1 side - adjacent to other blocks
+
+	// 2. facing 2 side - corner
+	// 3. facing 3 side - extruded
+	// 4. facing 4 sides - isolated
+	
+	
+}
+// end of placeholder for building
 // shows drawing of path
 function drawPath(){
 
@@ -493,13 +587,14 @@ function clearGrid(){
  
 function main(){
     console.log("Main size: " + size);
-    getGridSize();
+    init();
     createGrid();
     // draw();
 
     createPath();
 	buildIntArray();
 	labelRegions();
+	fillBuildings();
 
     // createPath();
     createBuildings();
