@@ -1,3 +1,39 @@
+// jsonfiy this
+var json = [
+                { "building_type":"Tavern", "max_width":5, "max_length":3, "max_height":3, "possibility": 0.7, "base_color": "#00ff00"},
+                { "building_type":"Shop", "max_width":31, "max_length":10, "max_height":10,"possibility": 0.7, "base_color": "#00ff00"},
+                { "building_type":"House", "max_width":31, "max_length":10, "max_height":10, "possibility": 0.7, "base_color": "#00ff00"},
+                { "building_type":"Blacksmith", "max_width":31, "max_length":10, "max_height":10,"possibility": 0.7, "base_color": "#00ff00"},
+                { "building_type":"Temple", "max_width":31, "max_length":10, "max_height":10,"possibility": 0.7, "base_color": "#00ff00"}              
+                
+            ];
+var myJSON = JSON.stringify(json);
+
+
+// color lerping
+// https://gist.github.com/rosszurowski/67f04465c424a9bc0dae
+/**
+ * A linear interpolator for hexadecimal colors
+ * @param {String} a
+ * @param {String} b
+ * @param {Number} amount
+ * @example
+ * // returns #7F7F7F
+ * lerpColor('#000000', '#ffffff', 0.5)
+ * @returns {String}
+ */
+function lerpColor(a, b, amount) { 
+
+    var ah = +a.replace('#', '0x'),
+        ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
+        bh = +b.replace('#', '0x'),
+        br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
+        rr = ar + amount * (br - ar),
+        rg = ag + amount * (bg - ag),
+        rb = ab + amount * (bb - ab);
+
+    return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
+}
 // user input
 var size;
 var water;
@@ -453,19 +489,29 @@ function fillBuildings() {
 	createNeighborhoodCenter(gridSize, numOfNeighborhoods);
 	
 	var debug_neighborhoodview = "";
-    for (var x = 0; x < gridSize; x++) {
-        for (var  y = 0; y < gridSize; y++) {
-			var id = getWhichNeighborhood(x,y);
-			debug_neighborhoodview += id;
+    var x = 0;
+    var y = 0;
+    while (x < gridSize) {
+        while (y < gridSize) {
+            var neighborhood_id = getWhichNeighborhood(x,y);
+			debug_neighborhoodview += neighborhood_id;
+            
+            if (array[x][y].color == GROUND) {
+                var centerType = chooseNeighborhoodType(json);
+                generateBuilding(neighborhood_id, centerType , x, y);
+            }
+            
 			// check if it is in a neighborhood
             //if (array[x][y].type == 0) {
             //    continue;
             //}
-		}
-		debug_neighborhoodview += "\n";
-	}
+            y++;
+        }
+        debug_neighborhoodview += "\n";
+        x++;
+    }
 
-	//console.log(debug_neighborhoodview);
+	console.log(debug_neighborhoodview);
 }
 // return id of the neighborhood, or -1 if not in any
 function getWhichNeighborhood (x,y) { 
@@ -482,7 +528,7 @@ function getWhichNeighborhood (x,y) {
 		var cy = neighborhoodCoords[i*2+1];
 		//console.log("cx"+cx+"cy"+cy+"x"+x+"y"+y);
 		var distance = Math.ceil(Math.sqrt((Math.pow(x-cx,2) + Math.pow(y-cy,2))));
-		console.log(distance);
+		//console.log(distance);
 
 		if (distance <　radius) {
 			return i;
@@ -524,6 +570,18 @@ function getBuildingDirection(x,y) {
 	// 4. facing 4 sides - isolated
 	
 	
+}
+// randomly choose a neighborhood type from the available list
+// input: array in json file for possible building types
+// output: key (building_type) for the chosen entry
+function chooseNeighborhoodType(json) {
+    var randomType = json[Math.random() * json.length | 0];
+    return randomType.building_type; 
+}
+function generateBuilding(neighborhood_id, centerType, x, y) {
+    // neighborhood_id -> get dtermine building type
+    
+    
 }
 // end of placeholder for building
 // shows drawing of path

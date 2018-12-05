@@ -93,11 +93,17 @@
 			var color = new THREE.Color();
 			var generatedMap = [];
 			
+            const GROUND = 'white';
+            const PATH = 'grey';
+            const WATER = 'Blue';
+            const BUILDING = 'GoldenRod'
+            const BRIDGE = 'Brown';
+
 			// fetch array from main index html
 			window.addEventListener('message', function(event) {
 				//console.log("array got");
 				generatedMap = event.data.value;
-				//console.log(generatedMap);
+				console.log(generatedMap);
 				updateBoxes();
 				//console.log("received data is");
 				
@@ -250,7 +256,7 @@
 				for ( var i = 0, l = position.count; i < l; i ++ ) {
 
 					color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-					colors.push( color.r, color.g, color.b );
+                    colors.push( color.r, color.g, color.b );
 
 				}
 
@@ -393,15 +399,24 @@
 				
 				var gridSize = generatedMap[0].length;
 				var buildingWidth = 20;
-				var distanceBetweenBuilding = 3;
+				var distanceBetweenBuilding = 0;
+                
+                // loop through each boxes
 				for (var x = 0; x < gridSize; x++) {
 					for(var y = 0; y < gridSize; y++) {
 						var buildingHeight = 0;
-						if (generatedMap[x][y].type == 0){
-							buildingHeight = 0;
+                        var buildingColor = 0x669999;
+                        
+                        if (generatedMap[x][y].color == WATER){
+							buildingHeight = 15; // scale by 10, 20 feel like 2
+                            buildingColor = 0x3399ff;
+                        } else if (generatedMap[x][y].color == BRIDGE) {
+                            buildingHeight = 15;
+                            buildingColor = 0x663300;
 						} else if (generatedMap[x][y].type == 1) {
-							buildingHeight = getRandomBetween(10,100);
-						}
+							buildingHeight = getRandomBetween(20,100);
+                            buildingColor = 0xffcc99;
+						} 
 						
 						
 						var boxGeometry = new THREE.BoxBufferGeometry( buildingWidth, buildingHeight, buildingWidth );
@@ -409,17 +424,21 @@
 
 						position = boxGeometry.attributes.position;
 						colors = [];
-						
+						// vertex color
 						for ( var i = 0, l = position.count; i < l; i ++ ) {
-							color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-							colors.push( color.r, color.g, color.b );
+							//color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
+							color.setHSL(0,1,1);
+                            colors.push( color.r, color.g, color.b );
 						}
 
 						boxGeometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
 				
 						var boxMaterial = new THREE.MeshPhongMaterial( { specular: 0xffffff, flatShading: true, vertexColors: THREE.VertexColors } );
-						boxMaterial.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-
+						
+                        // material color - set by building color
+                        boxMaterial.color.set( buildingColor );
+                        
+                        
 						var box = new THREE.Mesh( boxGeometry, boxMaterial );
 						// times -1 due to starting postiotn
 						box.position.x = -1*(buildingWidth/2 + x*(buildingWidth+distanceBetweenBuilding));
