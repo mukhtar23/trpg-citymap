@@ -495,18 +495,35 @@ function fillBuildings() {
         while (y < gridSize) {
             var neighborhood_id = getWhichNeighborhood(x,y);
 			debug_neighborhoodview += neighborhood_id;
-            console.log(array[x][y].color)
+            //console.log(array[x][y].color)
             if (array[x][y].color == BUILDING) { // build a building on the ground!
-                //console.log("hit");
+                
+                var building_color = lerpColor('#000000', '#ff0000', Math.random());
                 var centerType = chooseNeighborhoodType(json);
                 var adjPaths = getBuildingDirection(x,y);
+                // from left to right, horizontal rows
                 if (adjPaths === "u" ||
                     adjPaths === "ul" ||
                     adjPaths === "ur" ||
                     adjPaths === "ulr") {
                         //generateBuilding(neighborhood_id, centerType , x, y);
-                        //console.log("hit");
-                        array[x][y].color = "BLACK";
+                        // get building max width
+                        var building_width = Math.floor(Math.random() * 3) + 1; // 1 to 3
+                        // check the next few cells is enough for this building
+                        var available_cells = 0;
+                        for (var i=0; i<building_width; i++) {
+                            if (array[x][y+i].color == BUILDING) 
+                                available_cells++;
+                            else 
+                                break;
+                        }
+                        // take the minimum one
+                        building_width = Math.min(building_width, available_cells);
+                        
+                        for (var i=0; i<building_width; i++) {
+                            array[x][y+i].color = building_color;
+                        }
+                 
                 } 
              
             }
