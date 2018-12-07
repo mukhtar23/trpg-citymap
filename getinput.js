@@ -495,15 +495,17 @@ function fillBuildings() {
         var y = 0;
         while (y < gridSize) {
             var neighborhood_id = getWhichNeighborhood(x,y);
+            
 			debug_neighborhoodview += neighborhood_id;
             //console.log(array[x][y].color)
             if (array[x][y].color == BUILDING) { // build a building on the ground!
                 
-                var building_color = lerpColor('#ffffff', '#ff0000', Math.random());
+                var chosen_building_key= generateBuilding(neighborhood_id, x, y);
+
+                var building_color = lerpColor('#ffffff', json[chosen_building_key].base_color, Math.random());
                 var adjPaths = getBuildingDirection(x,y);
                 var building_width = Math.floor(Math.random() * 3) + 1; // 1 to 3
                 var building_length = Math.floor(Math.random() * 5) + 1; // 1 to 5
-                //generateBuilding(neighborhood_id, centerType , x, y);
 
                 // from left to right, top to down, horizontal rows
                 if (adjPaths === "u" ||
@@ -720,13 +722,46 @@ function getBuildingDirection(x,y) {
 // input: array in json file for possible building types
 // output: key (building_type) for the chosen entry
 function chooseNeighborhoodType(json) {
-    var randomType = json[Math.random() * json.length | 0];
-    return randomType.building_type; 
+    //var randomType = json[Math.random() * json.length | 0];
+    var random_type_key = Math.random() * json.length | 0
+    return random_type_key; 
 }
-function generateBuilding(neighborhood_id, centerType, x, y) {
+
+//input: neighborhood_id, x, y
+//output: dictionary key for the selected building type 
+function generateBuilding(neighborhood_id, x, y) {
+    var chosen_building_key = 0;
     // neighborhood_id -> get dtermine building type
-    
-    
+    if (neighborhood_id == -1) { // outside
+        var randomNumber = Math.floor(Math.random() * 100) + 1 // 1 to 100
+        var current_index = 0;
+        for (key in json) {
+            current_index += 10 * json[key]['outside_possibility'];
+            if (randomNumber < current_index) {
+                chosen_building_key = key;
+                break;
+            }
+        }
+    } else if (neighborhood_id % 1 == 0.5) {// feathering
+        var center_id = neighborhood_id - 0.5;
+
+        var randomNumber = Math.floor(Math.random() * 100) + 1 // 1 to 100
+        var current_index = 0;
+        for (key in json) {
+            current_index += 10 * json[key]['feathering_possibility'];
+            if (randomNumber < current_index) {
+                chosen_building_key = key;
+                break;
+            }
+        }
+    } else { // eighborhood center
+        chosen_building_key = neighborhoods[neighborhood_id].type;
+        //for (key in json) {
+        //    if (neighborhoods[neighborhood_id].type == json[key].building_type)
+        //        return key;
+        //}        
+    }
+    return chosen_building_key;
 }
 // end of placeholder for building
 // shows drawing of path
