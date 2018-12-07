@@ -1,10 +1,10 @@
 // jsonfiy this
 var json = [
-                { "building_type":"Tavern", "max_width":5, "max_length":3, "max_height":3, "possibility": 0.7, "base_color": "#00ff00"},
-                { "building_type":"Shop", "max_width":31, "max_length":10, "max_height":10,"possibility": 0.7, "base_color": "#00ff00"},
-                { "building_type":"House", "max_width":31, "max_length":10, "max_height":10, "possibility": 0.7, "base_color": "#00ff00"},
-                { "building_type":"Blacksmith", "max_width":31, "max_length":10, "max_height":10,"possibility": 0.7, "base_color": "#00ff00"},
-                { "building_type":"Temple", "max_width":31, "max_length":10, "max_height":10,"possibility": 0.7, "base_color": "#00ff00"}              
+                { "building_type":"Tavern", "max_width":5, "max_length":3, "max_height":3, "center_possibility": 0.3, "feathering_possibility":0.3, "outside_possibility":0.1, "base_color": "#ff0000"},
+                { "building_type":"Shop", "max_width":5, "max_length":3, "max_height":2, "center_possibility": 0.4, "feathering_possibility":0.2, "outside_possibility":0.1,  "base_color": "#00ff00"},
+                { "building_type":"House", "max_width":5, "max_length":5, "max_height":5,  "center_possibility": 0.05, "feathering_possibility":0.1, "outside_possibility":0.6, "base_color": "#0000ff"},
+                { "building_type":"Blacksmith", "max_width":5, "max_length":2, "max_height":3, "center_possibility": 0.05, "feathering_possibility":0.3, "outside_possibility":0.1, "base_color": "#ffff00"},
+                { "building_type":"Temple", "max_width":5, "max_length":5, "max_height":10, "center_possibility": 0.2, "feathering_possibility":0.1, "outside_possibility":0.1, "base_color": "#ff00ff"}              
                 
             ];
 var myJSON = JSON.stringify(json);
@@ -64,7 +64,7 @@ const HOUSE = "#FF7575"; // some brick red
 var radius = 0;
 var feather_radius = 0;
 var numOfNeighborhoods = 0;
-var neighborhoodCoords = [];
+var neighborhoods = {};
 
 
 var pathArray = [];
@@ -475,19 +475,20 @@ function labelRegions() {
 // output: array of coord for points [x1, y1, (x2, y2 ...)]
 function createNeighborhoodCenter(gridSize, numOfPoints) {
 	//return coord for neighborhood center
-	var pointCoords = [];
-	for (var i=0; i<numOfPoints; i++) {
+	neighborhoods = {}; // clear it
+    for (var i=0; i<numOfPoints; i++) {
 		var x = Math.floor((Math.random() * gridSize) + 1);
 		var y = Math.floor((Math.random() * gridSize) + 1);
-		pointCoords.push(x);
-		pointCoords.push(y);
+        neighborhoods[i] = {};
+        neighborhoods[i].type = chooseNeighborhoodType(json);
+        neighborhoods[i].x = x;
+		neighborhoods[i].y = y;
 	}
-	neighborhoodCoords = pointCoords;
 }
  
 function fillBuildings() {
 	createNeighborhoodCenter(gridSize, numOfNeighborhoods);
-	
+	console.log(neighborhoods);
 	var debug_neighborhoodview = "";
     var x = 0;
     while (x < gridSize) {
@@ -499,7 +500,6 @@ function fillBuildings() {
             if (array[x][y].color == BUILDING) { // build a building on the ground!
                 
                 var building_color = lerpColor('#ffffff', '#ff0000', Math.random());
-                var centerType = chooseNeighborhoodType(json);
                 var adjPaths = getBuildingDirection(x,y);
                 var building_width = Math.floor(Math.random() * 3) + 1; // 1 to 3
                 var building_length = Math.floor(Math.random() * 5) + 1; // 1 to 5
@@ -661,32 +661,29 @@ function fillBuildings() {
         x+=1;
     }
 
-	//console.log(debug_neighborhoodview);
+	console.log(debug_neighborhoodview);
 }
 // return id of the neighborhood, or -1 if not in any
 function getWhichNeighborhood (x,y) { 
 
-	if (neighborhoodCoords.length != numOfNeighborhoods*2) {
-		console.log("Error: neighborhoodCoords.length does not match numOfNeighborhoods!");
-		return;
-	}
+	//if (neighborhoodCoords.length != numOfNeighborhoods*2) {
+	//	console.log("Error: neighborhoodCoords.length does not match numOfNeighborhoods!");
+	//	return;
+	//}
 	
 	var neighborhoodId = -1;
 	// loop through each neighborhoods
-	for (var i = 0; i < numOfNeighborhoods; i++ ) {
-		var cx = neighborhoodCoords[i*2];
-		var cy = neighborhoodCoords[i*2+1];
-		//console.log("cx"+cx+"cy"+cy+"x"+x+"y"+y);
-		var distance = Math.ceil(Math.sqrt((Math.pow(x-cx,2) + Math.pow(y-cy,2))));
+    for (var key in neighborhoods){
+        var cx = neighborhoods[key].x;
+		var cy = neighborhoods[key].y;
+    	var distance = Math.ceil(Math.sqrt((Math.pow(x-cx,2) + Math.pow(y-cy,2))));
 		//console.log(distance);
 
 		if (distance <　radius) {
-			return i;
+			return key;
 		} else if (distance < radius+feather_radius) {
-			return i+0.5;
-		}
-		// else not in this neighborhood
-		
+			return key+0.5;
+		} 
 	}
 	//return -1 if not in any neighborhood
 	return neighborhoodId;
