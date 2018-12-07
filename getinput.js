@@ -498,10 +498,14 @@ function fillBuildings() {
             //console.log(array[x][y].color)
             if (array[x][y].color == BUILDING) { // build a building on the ground!
                 
-                var building_color = lerpColor('#000000', '#ff0000', Math.random());
+                var building_color = lerpColor('#ffffff', '#ff0000', Math.random());
                 var centerType = chooseNeighborhoodType(json);
                 var adjPaths = getBuildingDirection(x,y);
-                // from left to right, horizontal rows
+                var building_width = Math.floor(Math.random() * 3) + 1; // 1 to 3
+                var building_length = Math.floor(Math.random() * 5) + 1; // 1 to 5
+                //generateBuilding(neighborhood_id, centerType , x, y);
+
+                // from left to right, top to down, horizontal rows
                 if (adjPaths === "u" ||
                     adjPaths === "ul" ||
                     adjPaths === "ur" ||
@@ -509,49 +513,142 @@ function fillBuildings() {
                     adjPaths === "ubl" ||
                     adjPaths === "ubr" ||
                     adjPaths === "ulr") {
-                        //generateBuilding(neighborhood_id, centerType , x, y);
-                        // get building max width
-                        var building_width = Math.floor(Math.random() * 3) + 1; // 1 to 3
-                        var building_length = Math.floor(Math.random() * 3) + 1; // 1 to 3
-
+                    // get building max width
+                    
+                    // check the next few cells is enough for this building
+                    var empty_right_cells = 0;
+                    for (var i=0; i<building_width; i++) {
+                        if (y+i < gridSize && array[x][y+i].color == BUILDING) 
+                            empty_right_cells++;
+                        else 
+                            break;
+                    }
+                    // take the minimum one
+                    var this_building_width = Math.min(building_width, empty_right_cells);
+                    
+                    // color the current building width
+                    for (var i=0; i<this_building_width; i++) {
+                        array[x][y+i].color = building_color;
+                        // grow the building inward as well
                         // check the next few cells is enough for this building
-                        var empty_right_cells = 0;
-                        for (var i=0; i<building_width; i++) {
-                            if (y+i < gridSize && array[x][y+i].color == BUILDING) 
-                                empty_right_cells++;
+                        var empty_down_cells = 0;
+                        for (var j=1; j<building_length; j++) {
+                            if (x+j < gridSize && array[x+j][y+i].color == BUILDING) 
+                                empty_down_cells++;
                             else 
                                 break;
                         }
-                        // take the minimum one
-                        building_width = Math.min(building_width, empty_right_cells);
-                        
-                        // color the current building width
-                        for (var i=0; i<building_width; i++) {
-                            array[x][y+i].color = building_color;
-                            // grow the building inward as well
-                            // check the next few cells is enough for this building
-                            var empty_down_cells = 0;
-                            for (var j=1; j<building_length; j++) {
-                                //console.log("i="+i+"l="+building_length);
-                                if (x+j < gridSize && array[x+j][y+i].color == BUILDING) 
-                                    empty_down_cells++;
-                                else 
-                                    break;
+                        var row_building_length = Math.min(building_length, empty_down_cells);
+                        if (row_building_length > 0) {    
+                            for (var j=0; j<row_building_length; j++) {
+                                array[x+j][y+i].color = building_color;
                             }
-                            console.log(empty_down_cells);
-                            var row_building_length = Math.min(building_length, empty_down_cells);
-                            if (row_building_length > 0) {    
-                                for (var j=0; j<row_building_length; j++) {
-                                    array[x+j][y+i].color = building_color;
-                                }
-                            } 
-                            
+                        } 
+                    }
+                // left to right
+                } else if (adjPaths === "l" ||
+                           adjPaths === "lr" ) {
+                    
+                    // check the next few cells is enough for this building
+                    var empty_right_cells = 0;
+                    for (var i=0; i<building_width; i++) {
+                        if (x+i < gridSize && array[x+i][y].color == BUILDING) 
+                            empty_right_cells++;
+                        else 
+                            break;
+                    }
+                    // take the minimum one
+                    var this_building_width = Math.min(building_width, empty_right_cells);
+                    
+                    // color the current building width
+                    for (var i=0; i<this_building_width; i++) {
+                        array[x+i][y].color = building_color;
+                        // grow the building inward as well
+                        // check the next few cells is enough for this building
+                        var empty_down_cells = 0;
+                        for (var j=1; j<building_length; j++) {
+                            if (y+j < gridSize && array[x+i][y+j].color == BUILDING) 
+                                empty_down_cells++;
+                            else 
+                                break;
                         }
-                        
-                        
-                 
-                } 
-             
+                        var row_building_length = Math.min(building_length, empty_down_cells);
+                        if (row_building_length > 0) {    
+                            for (var j=0; j<row_building_length; j++) {
+                                array[x+i][y+j].color = building_color;
+                            }
+                        } 
+                    }
+                } else if (adjPaths === "b" ||
+                           adjPaths === "bl" ||
+                           adjPaths === "blr") {
+                    
+                                 // get building max width
+                    
+                    // check the next few cells is enough for this building
+                    var empty_right_cells = 0;
+                    for (var i=0; i<building_width; i++) {
+                        if (y+i < gridSize && array[x][y+i].color == BUILDING) 
+                            empty_right_cells++;
+                        else 
+                            break;
+                    }
+                    // take the minimum one
+                    var this_building_width = Math.min(building_width, empty_right_cells);
+                    
+                    // color the current building width
+                    for (var i=0; i<this_building_width; i++) {
+                        array[x][y+i].color = building_color;
+                        // grow the building inward as well
+                        // check the next few cells is enough for this building
+                        var empty_down_cells = 0;
+                        for (var j=1; j<building_length; j++) {
+                            if (x-j >= 0 && array[x-j][y+i].color == BUILDING) 
+                                empty_down_cells++;
+                            else 
+                                break;
+                        }
+                        var row_building_length = Math.min(building_length, empty_down_cells);
+                        if (row_building_length > 0) {    
+                            for (var j=0; j<row_building_length; j++) {
+                                array[x-j][y+i].color = building_color;
+                            }
+                        } 
+                    }
+                // right to left
+                } else if (adjPaths === "r" ||
+                           adjPaths === "br" ) {
+                    // check the next few cells is enough for this building
+                    var empty_right_cells = 0;
+                    for (var i=0; i<building_width; i++) {
+                        if (x+i < gridSize && array[x+i][y].color == BUILDING) 
+                            empty_right_cells++;
+                        else 
+                            break;
+                    }
+                    // take the minimum one
+                    var this_building_width = Math.min(building_width, empty_right_cells);
+                    
+                    // color the current building width
+                    for (var i=0; i<this_building_width; i++) {
+                        array[x+i][y].color = building_color;
+                        // grow the building inward as well
+                        // check the next few cells is enough for this building
+                        var empty_down_cells = 0;
+                        for (var j=1; j<building_length; j++) {
+                            if (y-j < gridSize && array[x+i][y-j].color == BUILDING) 
+                                empty_down_cells++;
+                            else 
+                                break;
+                        }
+                        var row_building_length = Math.min(building_length, empty_down_cells);
+                        if (row_building_length > 0) {    
+                            for (var j=0; j<row_building_length; j++) {
+                                array[x+i][y-j].color = building_color;
+                            }
+                        } 
+                    }
+                }
             }
             
 			// check if it is in a neighborhood
