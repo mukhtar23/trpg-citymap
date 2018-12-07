@@ -490,28 +490,38 @@ function fillBuildings() {
 	
 	var debug_neighborhoodview = "";
     var x = 0;
-    var y = 0;
     while (x < gridSize) {
+        var y = 0;
         while (y < gridSize) {
             var neighborhood_id = getWhichNeighborhood(x,y);
 			debug_neighborhoodview += neighborhood_id;
-            
-            if (array[x][y].color == GROUND) {
+            console.log(array[x][y].color)
+            if (array[x][y].color == BUILDING) { // build a building on the ground!
+                //console.log("hit");
                 var centerType = chooseNeighborhoodType(json);
-                generateBuilding(neighborhood_id, centerType , x, y);
+                var adjPaths = getBuildingDirection(x,y);
+                if (adjPaths === "u" ||
+                    adjPaths === "ul" ||
+                    adjPaths === "ur" ||
+                    adjPaths === "ulr") {
+                        //generateBuilding(neighborhood_id, centerType , x, y);
+                        //console.log("hit");
+                        array[x][y].color = "BLACK";
+                } 
+             
             }
             
 			// check if it is in a neighborhood
             //if (array[x][y].type == 0) {
             //    continue;
             //}
-            y++;
+            y+=1;
         }
         debug_neighborhoodview += "\n";
-        x++;
+        x+=1;
     }
 
-	console.log(debug_neighborhoodview);
+	//console.log(debug_neighborhoodview);
 }
 // return id of the neighborhood, or -1 if not in any
 function getWhichNeighborhood (x,y) { 
@@ -541,34 +551,32 @@ function getWhichNeighborhood (x,y) {
 	//return -1 if not in any neighborhood
 	return neighborhoodId;
 }
+//input: coordinate of the building
+// output: string that what is 
 function getBuildingDirection(x,y) {
-	var adjCells = [];
-	adjCells.push(array[x][y-1].type);
-	adjCells.push(array[x][y+1].type);
-	adjCells.push(array[x-1][y].type);
-	adjCells.push(array[x+1][y].type);
+    var adjCells = [0,0,0,0];
+	var str = "";
+    console.log(x+","+y);
+    if (y !=0 && array[x][y-1].color === PATH ) adjCells[0]=1;
+    if (y != gridSize-1 && array[x][y+1].color === PATH) adjCells[1]=1;
+    if (x != 0 && array[x-1][y].color === PATH) adjCells[2]=1;
+    if (x != gridSize-1 && array[x+1][y].color === PATH) adjCells[3]=1;
+    // u b l r
+    if (adjCells[2]==1) str+="u"; // l
+    if (adjCells[3]==1) str+="b"; //r
+    if (adjCells[0]==1) str+="l"; //u
+	if (adjCells[1]==1) str+="r"; //b
+    
+    console.log(str);
 	
-	
-	adjCells.sort();
-	// [0 0 1 1]
-	
-	// count how many 0 (path) there is 
-	var ptr = 0
-	var count = 0
-	while (adjCells[ptr] != 1) {
-		count++;
-		ptr++;
-	}
-
-	
-	// handle edge cases
+    // handle edge cases
 	// 0. facing 0 side - inside region... don't touch 
 	// 1. facing 1 side - adjacent to other blocks
 
 	// 2. facing 2 side - corner
 	// 3. facing 3 side - extruded
 	// 4. facing 4 sides - isolated
-	
+	return str;
 	
 }
 // randomly choose a neighborhood type from the available list
@@ -652,14 +660,17 @@ function main(){
     createPath();
 	buildIntArray();
 	labelRegions();
-	fillBuildings();
+
 
     // createPath();
     createBuildings();
+
     if(water == "river"){
         createRiver();
         createBridges();
     }
+    fillBuildings();
+        
     drawMap();
     // drawPath(); // shows drawing of path
     // drawWater(); // shows drawing of water
