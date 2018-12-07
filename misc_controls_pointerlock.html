@@ -417,7 +417,7 @@
                             buildingHeight = 3;
                             buildingColor = 0xccff66;
                         } else if (generatedMap[x][y].type == 1) {
-							buildingHeight = getRandomBetween(20,100);
+							buildingHeight = generatedMap[x][y].building_height;
                             buildingColor = generatedMap[x][y].color;
 						} 
 						

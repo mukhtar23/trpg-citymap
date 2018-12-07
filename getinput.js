@@ -1,10 +1,10 @@
 // jsonfiy this
 var json = [
-                { "building_type":"Tavern", "max_width":5, "max_length":3, "max_height":3, "center_possibility": 0.3, "feathering_possibility":0.3, "outside_possibility":0.1, "base_color": "#ff0000"},
-                { "building_type":"Shop", "max_width":5, "max_length":3, "max_height":2, "center_possibility": 0.4, "feathering_possibility":0.2, "outside_possibility":0.1,  "base_color": "#00ff00"},
-                { "building_type":"House", "max_width":5, "max_length":5, "max_height":5,  "center_possibility": 0.05, "feathering_possibility":0.1, "outside_possibility":0.6, "base_color": "#0000ff"},
-                { "building_type":"Blacksmith", "max_width":5, "max_length":2, "max_height":3, "center_possibility": 0.05, "feathering_possibility":0.3, "outside_possibility":0.1, "base_color": "#ffff00"},
-                { "building_type":"Temple", "max_width":5, "max_length":5, "max_height":10, "center_possibility": 0.2, "feathering_possibility":0.1, "outside_possibility":0.1, "base_color": "#ff00ff"}              
+                { "building_type":"Tavern", "max_width":5, "max_length":3, "max_height":90, "center_possibility": 0.3, "feathering_possibility":0.3, "outside_possibility":0.1, "base_color": "#ff0000"},
+                { "building_type":"Shop", "max_width":5, "max_length":3, "max_height":60, "center_possibility": 0.4, "feathering_possibility":0.2, "outside_possibility":0.1,  "base_color": "#00ff00"},
+                { "building_type":"House", "max_width":5, "max_length":5, "max_height":100,  "center_possibility": 0.05, "feathering_possibility":0.1, "outside_possibility":0.6, "base_color": "#0000ff"},
+                { "building_type":"Blacksmith", "max_width":5, "max_length":2, "max_height":60, "center_possibility": 0.05, "feathering_possibility":0.3, "outside_possibility":0.1, "base_color": "#ffff00"},
+                { "building_type":"Temple", "max_width":5, "max_length":5, "max_height":200, "center_possibility": 0.2, "feathering_possibility":0.1, "outside_possibility":0.1, "base_color": "#ff00ff"}              
                 
             ];
 var myJSON = JSON.stringify(json);
@@ -504,8 +504,9 @@ function fillBuildings() {
 
                 var building_color = lerpColor('#ffffff', json[chosen_building_key].base_color, Math.random());
                 var adjPaths = getBuildingDirection(x,y);
-                var building_width = Math.floor(Math.random() * 3) + 1; // 1 to 3
-                var building_length = Math.floor(Math.random() * 5) + 1; // 1 to 5
+                var building_width = Math.floor(Math.random() * json[chosen_building_key].max_width) + 1; // 1 to max_width
+                var building_length = Math.floor(Math.random() * json[chosen_building_key].max_length) + 1; // 1 to max_length
+                var building_height = Math.floor(Math.random() * json[chosen_building_key].max_height) + 40; // 15 to max_height
 
                 // from left to right, top to down, horizontal rows
                 if (adjPaths === "u" ||
@@ -531,6 +532,8 @@ function fillBuildings() {
                     // color the current building width
                     for (var i=0; i<this_building_width; i++) {
                         array[x][y+i].color = building_color;
+                        array[x][y+i].building_height = building_height;
+
                         // grow the building inward as well
                         // check the next few cells is enough for this building
                         var empty_down_cells = 0;
@@ -544,6 +547,7 @@ function fillBuildings() {
                         if (row_building_length > 0) {    
                             for (var j=0; j<row_building_length; j++) {
                                 array[x+j][y+i].color = building_color;
+                                array[x+j][y+i].building_height = building_height;
                             }
                         } 
                     }
@@ -565,6 +569,8 @@ function fillBuildings() {
                     // color the current building width
                     for (var i=0; i<this_building_width; i++) {
                         array[x+i][y].color = building_color;
+                        array[x+i][y].building_height = building_height;
+
                         // grow the building inward as well
                         // check the next few cells is enough for this building
                         var empty_down_cells = 0;
@@ -578,6 +584,7 @@ function fillBuildings() {
                         if (row_building_length > 0) {    
                             for (var j=0; j<row_building_length; j++) {
                                 array[x+i][y+j].color = building_color;
+                                array[x+i][y+j].building_height = building_height;
                             }
                         } 
                     }
@@ -601,6 +608,7 @@ function fillBuildings() {
                     // color the current building width
                     for (var i=0; i<this_building_width; i++) {
                         array[x][y+i].color = building_color;
+                        array[x][y+i].building_height = building_height;
                         // grow the building inward as well
                         // check the next few cells is enough for this building
                         var empty_down_cells = 0;
@@ -614,6 +622,7 @@ function fillBuildings() {
                         if (row_building_length > 0) {    
                             for (var j=0; j<row_building_length; j++) {
                                 array[x-j][y+i].color = building_color;
+                                array[x-j][y+i].building_height = building_height;
                             }
                         } 
                     }
@@ -634,6 +643,7 @@ function fillBuildings() {
                     // color the current building width
                     for (var i=0; i<this_building_width; i++) {
                         array[x+i][y].color = building_color;
+                        array[x+i][y].building_height = building_height;
                         // grow the building inward as well
                         // check the next few cells is enough for this building
                         var empty_down_cells = 0;
@@ -647,6 +657,7 @@ function fillBuildings() {
                         if (row_building_length > 0) {    
                             for (var j=0; j<row_building_length; j++) {
                                 array[x+i][y-j].color = building_color;
+                                array[x+i][y-i].building_height = building_height;
                             }
                         } 
                     }
