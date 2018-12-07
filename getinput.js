@@ -505,6 +505,9 @@ function fillBuildings() {
                 if (adjPaths === "u" ||
                     adjPaths === "ul" ||
                     adjPaths === "ur" ||
+                    adjPaths === "ub" || 
+                    adjPaths === "ubl" ||
+                    adjPaths === "ubr" ||
                     adjPaths === "ulr") {
                         //generateBuilding(neighborhood_id, centerType , x, y);
                         // get building max width
@@ -520,9 +523,12 @@ function fillBuildings() {
                         // take the minimum one
                         building_width = Math.min(building_width, available_cells);
                         
+                        // color the current building width
                         for (var i=0; i<building_width; i++) {
                             array[x][y+i].color = building_color;
                         }
+                        
+                        
                  
                 } 
              
