@@ -512,20 +512,40 @@ function fillBuildings() {
                         //generateBuilding(neighborhood_id, centerType , x, y);
                         // get building max width
                         var building_width = Math.floor(Math.random() * 3) + 1; // 1 to 3
+                        var building_length = Math.floor(Math.random() * 3) + 1; // 1 to 3
+
                         // check the next few cells is enough for this building
-                        var available_cells = 0;
+                        var empty_right_cells = 0;
                         for (var i=0; i<building_width; i++) {
-                            if (array[x][y+i].color == BUILDING) 
-                                available_cells++;
+                            if (y+i < gridSize && array[x][y+i].color == BUILDING) 
+                                empty_right_cells++;
                             else 
                                 break;
                         }
                         // take the minimum one
-                        building_width = Math.min(building_width, available_cells);
+                        building_width = Math.min(building_width, empty_right_cells);
                         
                         // color the current building width
                         for (var i=0; i<building_width; i++) {
                             array[x][y+i].color = building_color;
+                            // grow the building inward as well
+                            // check the next few cells is enough for this building
+                            var empty_down_cells = 0;
+                            for (var j=1; j<building_length; j++) {
+                                //console.log("i="+i+"l="+building_length);
+                                if (x+j < gridSize && array[x+j][y+i].color == BUILDING) 
+                                    empty_down_cells++;
+                                else 
+                                    break;
+                            }
+                            console.log(empty_down_cells);
+                            var row_building_length = Math.min(building_length, empty_down_cells);
+                            if (row_building_length > 0) {    
+                                for (var j=0; j<row_building_length; j++) {
+                                    array[x+j][y+i].color = building_color;
+                                }
+                            } 
+                            
                         }
                         
                         
@@ -579,7 +599,7 @@ function getWhichNeighborhood (x,y) {
 function getBuildingDirection(x,y) {
     var adjCells = [0,0,0,0];
 	var str = "";
-    console.log(x+","+y);
+    //console.log(x+","+y);
     if (y !=0 && array[x][y-1].color === PATH ) adjCells[0]=1;
     if (y != gridSize-1 && array[x][y+1].color === PATH) adjCells[1]=1;
     if (x != 0 && array[x-1][y].color === PATH) adjCells[2]=1;
@@ -590,7 +610,7 @@ function getBuildingDirection(x,y) {
     if (adjCells[0]==1) str+="l"; //u
 	if (adjCells[1]==1) str+="r"; //b
     
-    console.log(str);
+    //console.log(str);
 	
     // handle edge cases
 	// 0. facing 0 side - inside region... don't touch 

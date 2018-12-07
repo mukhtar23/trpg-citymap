@@ -413,7 +413,10 @@
                         } else if (generatedMap[x][y].color == BRIDGE) {
                             buildingHeight = 15;
                             buildingColor = 0x663300;
-						} else if (generatedMap[x][y].type == 1) {
+						} else if (generatedMap[x][y].color == BUILDING) { // park...
+                            buildingHeight = 3;
+                            buildingColor = 0xccff66;
+                        } else if (generatedMap[x][y].type == 1) {
 							buildingHeight = getRandomBetween(20,100);
                             buildingColor = 0xffcc99;
 						} 
