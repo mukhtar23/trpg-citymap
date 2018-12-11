@@ -1,4 +1,8 @@
 # trpg-citymap
+# Prototype
+![3d_minimap](3d_minimap.png?raw=true "Title")
+(Sorry, this is just a image prototype, I don't have the 2D minimap embedded in the 3D webGL part.)
+
 # Live Demo 
 https://yhong3.github.io/trpg-citymap
 
